@@ -34,6 +34,7 @@ RUN apk add --no-cache --update \
     php7-pdo_mysql \
     php7-pdo_pgsql \
     php7-pdo_sqlite \
+    php7-pecl-xdebug \
     php7-phar \
     php7-posix \
     php7-redis \
@@ -53,6 +54,18 @@ RUN apk add --no-cache --update \
     sudo \
     wget sqlite git curl bash grep \
     supervisor
+
+
+# Enable Remote xdebug
+RUN echo "zend_extension=xdebug" >> /etc/php7/conf.d/xdebug.ini && \
+    echo "xdebug.remote_enable=1" >> /etc/php7/conf.d/xdebug.ini && \
+    echo "xdebug.remote_autostart=1" >>/etc/php7/conf.d/xdebug.ini && \
+    echo "xdebug.idekey=PHPSTORM" >> /etc/php7/conf.d/xdebug.ini && \
+    echo "xdebug.remote_port=9001" >> /etc/php7/conf.d/xdebug.ini && \
+    echo "xdebug.remote_host=host.docker.internal" >> /etc/php7/conf.d/xdebug.ini
+#    echo "xdebug.default_enable=0" >> /etc/php7/conf.d/xdebug.ini && \
+#    echo "xdebug.remote_connect_back=0" >> /etc/php7/conf.d/xdebug.ini && \
+#    echo "xdebug.profiler_enable=0" >> /etc/php7/conf.d/xdebug.ini
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \

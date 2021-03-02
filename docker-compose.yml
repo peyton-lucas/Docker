@@ -10,6 +10,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     restart: always
   cachet:
+    volumes:
+      - ./Cachet/:/var/www/html/
     build:
       context: .
       args:
@@ -19,6 +21,9 @@ services:
     links:
       - postgres:postgres
     environment:
+      - PHP_XDEBUG_ENABLED=1 # Set 1 to enable.
+      - PHP_IDE_CONFIG=serverName=cachet-debug
+      - XDEBUG_CONFIG=remote_host=host.docker.internal
       - DB_DRIVER=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -26,7 +31,7 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
       - DB_PREFIX=chq_
-      - APP_KEY=${APP_KEY:-null}
+      - APP_KEY=base64:AepkyHR/SZBjEFU5yk/YUH9tI69GD05raa1kCfNWgNY=
       - APP_LOG=errorlog
       - APP_ENV=${APP_ENV:-production}
       - APP_DEBUG=false
