@@ -63,9 +63,6 @@ RUN echo "zend_extension=xdebug" >> /etc/php7/conf.d/xdebug.ini && \
     echo "xdebug.idekey=PHPSTORM" >> /etc/php7/conf.d/xdebug.ini && \
     echo "xdebug.remote_port=9001" >> /etc/php7/conf.d/xdebug.ini && \
     echo "xdebug.remote_host=host.docker.internal" >> /etc/php7/conf.d/xdebug.ini
-#    echo "xdebug.default_enable=0" >> /etc/php7/conf.d/xdebug.ini && \
-#    echo "xdebug.remote_connect_back=0" >> /etc/php7/conf.d/xdebug.ini && \
-#    echo "xdebug.profiler_enable=0" >> /etc/php7/conf.d/xdebug.ini
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
@@ -115,5 +112,11 @@ COPY entrypoint.sh /sbin/entrypoint.sh
 
 USER root
 RUN chmod g+rwx /var/run/nginx.pid && \
-    chmod -R g+rw /var/www /usr/share/nginx/cache /var/cache/nginx /var/lib/nginx/ /etc/php7/php-fpm.d storage
+    chmod -R g+rw /var/www /usr/share/nginx/cache /var/cache/nginx /var/lib/nginx/ /etc/php7/php-fpm.d storage && \
+    sed -E -i -e "s/request_terminate_timeout = 300/request_terminate_timeout = 3600/" /etc/php7/php-fpm.d/www.conf && \
+    sed -E -i -e "s/max_input_time = 60/max_input_time = 3600/" /etc/php7/php.ini && \
+    sed -E -i -e "s/max_execution_time = 30/max_execution_time = 3600/" /etc/php7/php.ini && \
+    sed -E -i -e "s/default_socket_timeout = 60/default_socket_timeout = 3600/" /etc/php7/php.ini && \
+    sed -E -i -e "s/smtp_port = 25/smtp_port = 2525/" /etc/php7/php.ini
+
 USER 1001
